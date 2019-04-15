@@ -29,15 +29,6 @@ impl Node {
         node
     }
 
-    fn merge_multiple(subheaps1: Vec<Node>, subheaps2: Vec<Node>) -> Node {
-        let node = Node::merge_two(
-           Node::merge_subheaps(subheaps1),
-           Node::merge_subheaps(subheaps2)
-       );
-
-       node
-    }
-
     fn merge_subheaps(subheaps: Vec<Node>) -> Node {
         let len = subheaps.len();
         let mid = len / 2;
@@ -50,10 +41,10 @@ impl Node {
         let after = match len {
             1 => subheaps[0].clone(),
             2 => Node::merge_two(subheaps[0].clone(), subheaps[1].clone()),
-            _ => Node::merge_multiple(
-               subheaps[0..mid].to_vec(),
-               subheaps[mid..len].to_vec(),
-            ),
+            _ => Node::merge_two(
+               Node::merge_subheaps(subheaps[0..mid].to_vec()),
+               Node::merge_subheaps(subheaps[mid..len].to_vec()),
+           )
         };
 
         after
@@ -102,12 +93,10 @@ mod tests {
         let len = tree_values.len();
         tree_values.sort();
 
-        println!("{:?}", tree_values);
         let mut curr_root = Some(root);
 
         for i in 0..len {
             let val = tree_values[i];
-            println!("{} remaining", len - i);
             match &curr_root {
                 Some(node) => assert!(node.get_size() == (len as usize) - i, "Remaining nodes count {} does not match expected {}", node.get_size(), len - i),
                 None => panic!("Reached end of the pairing heap"),
@@ -123,7 +112,5 @@ mod tests {
                 None => None,
             }
         }
-
-        assert!(true);
     }
 }
