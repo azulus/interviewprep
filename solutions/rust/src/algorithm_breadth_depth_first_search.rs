@@ -36,6 +36,21 @@ impl Node {
         return Err("Couldn't find node".to_string());
     }
 
+    fn find_node_depth_first(node: &Node, val: i32) -> Result<&Node, String> {
+        if node.value == val {
+            return Ok(node);
+        }
+
+        for i in 0..node.children.len() {
+            let result = Node::find_node_depth_first(&(node.children[i]), val);
+            if result.is_ok() {
+                return result;
+            }
+        }
+
+        return Err("Couldn't find node".to_string());
+    }
+
     fn get_size(&self) -> i32 {
         let mut size = 1;
         for i in 0..self.children.len() {
@@ -84,7 +99,7 @@ mod tests {
     }
 
     #[test]
-    fn test_search() {
+    fn test_breadth_first_search() {
         let num_tiers = 4;
         let per_tier = 4;
 
@@ -112,7 +127,36 @@ mod tests {
             Ok(n) => panic!("Should not find result, received {}", n.value),
             Err(_) => assert!(true, "should not find 3125"),
         };
+    }
 
+    #[test]
+    fn test_depth_first_search() {
+        let num_tiers = 4;
+        let per_tier = 4;
 
+        let mut root = Node::create_node(0);
+
+        let num_nodes = 1 + _add_children(&mut root, per_tier, num_tiers - 1);
+        assert!(root.get_size() == num_nodes, "Expected size {} but received {}", num_nodes, root.get_size());
+
+        match Node::find_node_depth_first(&root, 1) {
+            Ok(n) => assert!(n.value == 1),
+            Err(e) => panic!(e),
+        };
+
+        match Node::find_node_depth_first(&root, 5) {
+            Ok(n) => panic!("Should not find result, received {}", n.value),
+            Err(_) => assert!(true, "should not find 5"),
+        };
+
+        match Node::find_node_depth_first(&root, 3123) {
+            Ok(n) => assert!(n.value == 3123),
+            Err(e) => panic!(e),
+        };
+
+        match Node::find_node_depth_first(&root, 3125) {
+            Ok(n) => panic!("Should not find result, received {}", n.value),
+            Err(_) => assert!(true, "should not find 3125"),
+        };
     }
 }
