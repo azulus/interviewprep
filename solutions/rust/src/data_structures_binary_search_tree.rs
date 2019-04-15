@@ -43,9 +43,9 @@ impl Node {
         };
     }
 
-    fn find_val(&self, search_val: i32) -> Result<i32, String> {
+    fn find_val(&self, search_val: i32) -> Result<&Node, String> {
         if search_val == self.value {
-            Ok(self.value)
+            Ok(self)
         } else if self.value > search_val {
             //let left: Option<Node> = *(self.left);
             return match &self.left {
@@ -86,7 +86,7 @@ mod tests {
             let val = tree_values[j];
 
             match root.find_val(val) {
-                Ok(return_val) => assert!(return_val == val, "{} is not equal to {}", val, return_val),
+                Ok(return_val) => assert!(return_val.value == val, "{} is not equal to {}", val, return_val.value),
                 Err(e) => panic!("Encountered error \"{}\"", e)
             }
         }
