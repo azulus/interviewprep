@@ -41,7 +41,6 @@ impl Node {
     fn merge_subheaps(subheaps: Vec<Node>) -> Node {
         let len = subheaps.len();
         let mid = len / 2;
-        let rem = len - mid + 1;
 
         let mut total_len = 0;
         for i in 0..subheaps.len() {
@@ -53,7 +52,7 @@ impl Node {
             2 => Node::merge_two(subheaps[0].clone(), subheaps[1].clone()),
             _ => Node::merge_multiple(
                subheaps[0..mid].to_vec(),
-               subheaps[mid..rem].to_vec(),
+               subheaps[mid..len].to_vec(),
             ),
         };
 
@@ -94,28 +93,23 @@ mod tests {
     #[test]
     fn simple() {
         let mut root: Node = Node::create_node(0);
-        let mut tree_values: Vec<i32> = vec![0];
-        let len = 20;
+        let mut tree_values = vec![38, 17, -4, 12, 4, 16, -22, 8, 6, 21, 25];
 
-        for i in 1..len {
-            let mut val = i;
-            if i % 2 == 0 {
-                val = val * -1;
-            }
-
-            tree_values.push(val);
-            root = root.insert(Node::create_node(val));
+        for i in 0..tree_values.len() {
+            root = root.insert(Node::create_node(tree_values[i]));
         }
+        tree_values.push(0);
+        let len = tree_values.len();
         tree_values.sort();
 
         println!("{:?}", tree_values);
         let mut curr_root = Some(root);
 
-        for i in 0..tree_values.len() {
+        for i in 0..len {
             let val = tree_values[i];
-            println!("{} remaining", tree_values.len() - i);
+            println!("{} remaining", len - i);
             match &curr_root {
-                Some(node) => assert!(node.get_size() == (len as usize) - i, "Remaining nodes count {} does not match expected {}", node.get_size(), len - (i as i32)),
+                Some(node) => assert!(node.get_size() == (len as usize) - i, "Remaining nodes count {} does not match expected {}", node.get_size(), len - i),
                 None => panic!("Reached end of the pairing heap"),
             }
 
